@@ -10,12 +10,21 @@ class ExitoSpider(scrapy.Spider):
 
     def start_requests(self):
         #update categories
-        init_url = 'https://www.exito.com/Tecnologia-TV_y_Video-Televisores/_/N-2csn?'
-        for i in range(6):
-            url = init_url + 'No='+ str(i*80) + '&Nrpp=80'
-            yield scrapy.Request(url=url, callback=self.parse)
+        urls = [
+            'https://www.exito.com/Tecnologia-TV_y_Video-Televisores/_/N-2csn?',
+            'https://www.exito.com/Electrohogar-Grandes_Electrodomesticos-Neveras/_/N-2ai7?',
+            'https://www.exito.com/Electrohogar-Grandes_Electrodomesticos-Lavadoras_y_Secadoras/_/N-2aie?',
+            'https://www.exito.com/Electrohogar-Pequenos_Electrodomesticos-Aires_y_ventiladores/_/N-2ajl?',
+            'https://www.exito.com/Electrohogar-Pequenos_Electrodomesticos-Preparacion_de_alimentos/_/N-2aj2?',
+            'https://www.exito.com/Tecnologia-Celulares_y_accesorios-Smartphones/_/N-2b5t?'
+        ]
+        for wurl in urls:
+            for i in range(6):
+                url = wurl + 'No='+ str(i*80) + '&Nrpp=80'
+                yield scrapy.Request(url=url, callback=self.parse)
 
     def parse(self, response):
+        #get all products divss
         products = response.css('div.product')
         for product in products:
             item =  ExitoItem()

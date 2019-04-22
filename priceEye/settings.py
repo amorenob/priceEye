@@ -9,6 +9,8 @@
 #     http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 #     http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 
+import os
+
 BOT_NAME = 'priceEye'
 
 SPIDER_MODULES = ['priceEye.spiders']
@@ -64,9 +66,13 @@ DOWNLOAD_DELAY = 3
 
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'priceEye.pipelines.PriceeyePipeline': 300,
-#}
+ITEM_PIPELINES = {
+    'priceEye.pipelines.JustOnePerDayPipeline': 100,
+    'priceEye.pipelines.MongoPipeline': 300,
+}
+
+MONGO_URI = os.environ["MONGO_URI"]
+MONGO_DATABASE = os.environ["MONGO_DATABASE"]
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
