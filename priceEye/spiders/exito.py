@@ -2,23 +2,20 @@
 import scrapy
 from priceEye.items import ExitoItem
 import re
+import os
 
 class ExitoSpider(scrapy.Spider):
     name = "exito"
     allowed_domains = ["www.exito.com"]
-   # start_urls = ['https://www.exito.com/Tecnologia-TV_y_Video-Televisores/_/N-2csn?No=0&Nrpp=80']
+    start_urls = []
+    urls_path = './priceEye/spiders/urls/exito.txt'
+    with open(urls_path, 'r') as urls_file:
+        for url in urls_file:
+            start_urls.append(url)
 
     def start_requests(self):
         #update categories
-        urls = [
-            'https://www.exito.com/Tecnologia-TV_y_Video-Televisores/_/N-2csn?',
-            'https://www.exito.com/Electrohogar-Grandes_Electrodomesticos-Neveras/_/N-2ai7?',
-            'https://www.exito.com/Electrohogar-Grandes_Electrodomesticos-Lavadoras_y_Secadoras/_/N-2aie?',
-            'https://www.exito.com/Electrohogar-Pequenos_Electrodomesticos-Aires_y_ventiladores/_/N-2ajl?',
-            'https://www.exito.com/Electrohogar-Pequenos_Electrodomesticos-Preparacion_de_alimentos/_/N-2aj2?',
-            'https://www.exito.com/Tecnologia-Celulares_y_accesorios-Smartphones/_/N-2b5t?'
-        ]
-        for wurl in urls:
+        for wurl in self.start_urls:
             for i in range(6):
                 url = wurl + 'No='+ str(i*80) + '&Nrpp=80'
                 yield scrapy.Request(url=url, callback=self.parse)
