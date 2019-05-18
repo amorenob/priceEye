@@ -18,7 +18,7 @@ NEWSPIDER_MODULE = 'priceEye.spiders'
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'priceEye (+http://www.yourdomain.com)'
+USER_AGENT = 'priceEye (+http://www.yourdomain.com)'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
@@ -54,10 +54,14 @@ DOWNLOAD_DELAY = 3
 
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
-#    'priceEye.middlewares.MyCustomDownloaderMiddleware': 543,
-#}
-
+# DOWNLOADER_MIDDLEWARES = {
+#     'scrapy_splash.SplashCookiesMiddleware': 723,
+#     'scrapy_splash.SplashMiddleware': 725,
+#    #'priceEye.middlewares.MyCustomDownloaderMiddleware': 543,
+# }
+# SPLASH_URL = 'http://localhost:8050/'
+# DUPEFILTER_CLASS = 'scrapy_splash.SplashAwareDupeFilter'
+# HTTPCACHE_STORAGE = 'scrapy_splash.SplashAwareFSCacheStorage'
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html
 #EXTENSIONS = {
@@ -68,7 +72,7 @@ DOWNLOAD_DELAY = 3
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     'priceEye.pipelines.JustOnePerDayPipeline': 100,
-    'priceEye.pipelines.MongoPipeline': 300,
+ #   'priceEye.pipelines.MongoPipeline': 300,
 }
 
 MONGO_URI = os.environ["MONGO_URI"]
