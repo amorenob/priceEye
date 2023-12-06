@@ -1,3 +1,10 @@
 .vscode
 env
+.venv
 cache
+output.json
+*.mwb
+*.mwb.bak
+testdb.py
+# pychache
+__pycache__/

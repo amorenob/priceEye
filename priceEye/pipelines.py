@@ -5,6 +5,7 @@
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 import pymongo
 import os
+import pymysql
 from datetime import datetime as dt
 from scrapy.exceptions import DropItem
 
@@ -42,6 +43,16 @@ class JustOnePerDayPipeline(object):
             self.file.write(item['sku'] + os.linesep)
             return item
 
+class CleanItemPipeline(object):
+    """Pipeline for cleaning item fields"""
+    def process_item(self, item, spider):
+        item['name'] = item['name'].strip()
+        item['brand'] = item['brand'].strip()
+        item['description'] = item['description'].strip()
+        item['price'] = item['price'].strip().replace('$', '').replace('.', '').replace(',', '')
+        item['fake_price'] = item['fake_price'].strip().replace('$', '').replace('.', '').replace(',', '')
+
+        return item
 
 class MongoPipeline(object):
     collection_name = 'exitoProducts'
@@ -74,3 +85,69 @@ class MongoPipeline(object):
         return item
 
 
+class MySQLPipeline(object):
+
+    def __init__(self, host, user, password, db):
+        self.host = host
+        self.user = user
+        self.password= password
+        self.db = db
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(
+            host=crawler.settings.get('MYSQL_HOST'),
+            user=crawler.settings.get('MYSQL_USER'),
+            password=crawler.settings.get('MYSQL_PASSWORD'),
+            db=crawler.settings.get('MYSQL_DATABASE'),
+        )
+
+    def open_spider(self, spider):
+        self.conn = pymysql.connect(
+            host=self.host,
+            user=self.user,
+            password=self.password,
+            db=self.db,
+            charset='utf8mb4',
+            cursorclass=pymysql.cursors.DictCursor
+        )
+        self.cursor = self.conn.cursor()
+
+    def process_item(self, item, spider):
+        try:
+            self.cursor.execute(""" 
+                INSERT INTO product (sku, name, description, category, brand, website, url) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                ON DUPLICATE KEY UPDATE 
+                name = VALUES(name),
+                description = VALUES(description),
+                category = VALUES(category),
+                brand = VALUES(brand),
+                website = VALUES(website),
+                url = VALUES(url)
+                """,
+                (item['sku'], item['name'], item['description'], item['category'], item['brand'], item['website'], item['url'])
+            )
+            self.conn.commit()
+
+            self.cursor.execute("""
+                SELECT id FROM product WHERE sku = %s"""
+                , (item['sku'],)
+            )
+            product_id = self.cursor.fetchone()['id']
+            # Update price table
+            self.cursor.execute("""
+                INSERT INTO price (product_id, price, fake_price, date) 
+                VALUES (%s, %s, %s, %s)
+                """,
+                (product_id, item['price'], item['fake_price'], dt.now())
+            )
+            self.conn.commit()
+            return item
+        except pymysql.Error as e:
+            raise DropItem(f'Error inserting item: {e}')
+        
+    
+    def get_items(self):
+        self.cursor.execute("SELECT * FROM product")
+        return self.cursor.fetchall()

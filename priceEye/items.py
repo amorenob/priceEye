@@ -8,13 +8,18 @@
 import scrapy
 
 
-class ExitoItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
+class Producto(scrapy.Item):
+    """Product item"""
     sku = scrapy.Field()
-    cat = scrapy.Field()
     name = scrapy.Field()
+    url = scrapy.Field()
+    category = scrapy.Field()
     brand = scrapy.Field()
-    prices = scrapy.Field()
-    discount_rate = scrapy.Field()
+    price = scrapy.Field()
+    fake_price = scrapy.Field()
+    description = scrapy.Field()
+    website = scrapy.Field()
     pass
+
+
+
