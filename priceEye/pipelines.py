@@ -46,12 +46,24 @@ class JustOnePerDayPipeline(object):
 class CleanItemPipeline(object):
     """Pipeline for cleaning item fields"""
     def process_item(self, item, spider):
+
+        # handle NoneType fields
+        for key in item.keys():
+            if item[key] is None:
+                item[key] = ''
+
         item['name'] = item['name'].strip()
         item['brand'] = item['brand'].strip()
         item['description'] = item['description'].strip()
-        item['price'] = item['price'].strip().replace('$', '').replace('.', '').replace(',', '')
-        item['fake_price'] = item['fake_price'].strip().replace('$', '').replace('.', '').replace(',', '')
+        item['price'] = item['price'].strip().replace('$', '').replace('.', '').replace(',', '').replace('\xa0', '')
+        item['fake_price'] = item['fake_price'].strip().replace('$', '').replace('.', '').replace(',', '').replace('\xa0', '')
 
+        # handle empty prices, replace with 0.0
+        if item['price'] == '':
+            item['price'] = '0.0'
+        if item['fake_price'] == '':
+            item['fake_price'] = '0.0'
+            
         return item
 
 class MongoPipeline(object):
