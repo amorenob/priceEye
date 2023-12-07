@@ -2,10 +2,7 @@ import scrapy
 from scrapy.http import HtmlResponse
 from scrapy_playwright.page import PageMethod
 from priceEye.items import Producto
-from PIL import Image
-from io import StringIO
-import logging
-import time
+import yaml
 
 class AlkostoSpider(scrapy.Spider):
     name = "alkosto"
@@ -13,17 +10,27 @@ class AlkostoSpider(scrapy.Spider):
     start_urls = ["https://alkosto.com"]
 
     def start_requests(self):
-        url = "https://www.alkosto.com/tv/smart-tv/c/BI_120_ALKOS"
-        yield scrapy.Request(
-                url,
-                callback=self.parse, 
-                meta=dict(
-                    playwright = True,
-                    playwright_include_page = True, 
-                    playwright_page_methods =[
-                        PageMethod("wait_for_selector", "div.product__item__information"),
-                    ])
-                )
+        # Load config YALM file
+        with open('./priceEye/spiders/config/alkosto.yaml', 'r') as f:
+            config = yaml.safe_load(f)
+
+        for tarjet in config['tarjets']:
+                
+            category = tarjet['category']
+            max_pages = tarjet['max_pages']
+
+            yield scrapy.Request(
+                    tarjet['url'],
+                    callback=self.parse, 
+                    meta=dict(
+                        playwright = True,
+                        playwright_include_page = True, 
+                        playwright_page_methods =[
+                            PageMethod("wait_for_selector", "div.product__item__information"),
+                        ],
+                        category = category,
+                        )
+                    )
 
     async def parse(self, response):
         #page = response.meta["playwright_page"]
@@ -60,4 +67,6 @@ class AlkostoSpider(scrapy.Spider):
             item["description"] = ""
             item["website"] = "alkosto.com"
             yield item
+
+        await page.close()
               

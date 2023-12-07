@@ -1,0 +1,19 @@
+base_url: https://www.alkosto.com
+tarjets:
+  - category: TELEVISORES
+    url: https://www.alkosto.com/tv/smart-tv/c/BI_120_ALKOS
+    max_pages: 10
+  - category: COMPLEMENTO TV
+    url: https://www.alkosto.com/complementos-tv/c/complementos-tv
+    max_pages: 10
+  - category: COMPUTADORES
+    url: https://www.alkosto.com/computadores-tablet/computadores-portatiles/c/BI_104_ALKOS
+    max_pages: 10
+  - category: ELECTRODOMESTICOS
+    url: https://www.alkosto.com/electrodomesticos/grandes-electrodomesticos/refrigeracion/c/BI_0610_ALKOS
+    max_pages: 10
+  - category: VIDEOJUEGOS
+    url: https://www.alkosto.com/videojuegos/consolas/c/BI_131_ALKOS
+    max_pages: 10
+
+

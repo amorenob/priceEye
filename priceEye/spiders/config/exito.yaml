@@ -1,0 +1,19 @@
+base_url: https://www.exito.com
+tarjets:
+  - category: TELEVISORES
+    url: https://www.exito.com/tecnologia/televisores
+    max_pages: 10
+  - category: COMPUTADORES
+    url: https://www.exito.com/tecnologia/computadores-y-accesorios/computadores-portatiles
+    max_pages: 10
+  - category: ACCESORIOS
+    url: https://www.exito.com/tecnologia/computadores-y-accesorios/accesorios-para-computadores
+    max_pages: 10
+  - category: ELECTRODOMESTICOS
+    url: https://www.exito.com/electrodomesticos/refrigeracion
+    max_pages: 10
+  - category: VIDEOJUEGOS
+    url: https://www.exito.com/tecnologia/consolas-y-videojuegos/consolas
+    max_pages: 10
+
+
