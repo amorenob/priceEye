@@ -18,7 +18,7 @@ class ExitoSpider(scrapy.Spider):
 
         for tarjet in config['tarjets']:
             
-            category = tarjet['category']
+            tags = tarjet['tags']
             max_pages = tarjet['max_pages']
 
             for page_number in range(1, max_pages + 1):
@@ -34,15 +34,13 @@ class ExitoSpider(scrapy.Spider):
                                 PageMethod("wait_for_timeout", 2000),
                                 ],
                             base_url = url,
-                            category = category,
+                            tags = tags,
                             )
                         )
-
-
     
     async def parse(self, response):
         page = response.meta["playwright_page"]
-
+        tags = response.meta["tags"]
 
         # Scroll to the bottom of the page
         await page.evaluate("""
@@ -83,7 +81,7 @@ class ExitoSpider(scrapy.Spider):
             else:
                 item['sku'] = ""
             item['brand'] = product.xpath(".//span[contains(@class,'productBrandName')]/text()").get()
-            item["category"] = 1
+            item["tags"] = tags + [item["brand"]]
             item["description"] = ""
             item["website"] = "exito.com"
             yield item

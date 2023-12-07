@@ -13,7 +13,7 @@ class Producto(scrapy.Item):
     sku = scrapy.Field()
     name = scrapy.Field()
     url = scrapy.Field()
-    category = scrapy.Field()
+    tags = scrapy.Field()
     brand = scrapy.Field()
     price = scrapy.Field()
     fake_price = scrapy.Field()

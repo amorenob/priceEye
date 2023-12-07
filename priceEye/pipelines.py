@@ -127,38 +127,62 @@ class MySQLPipeline(object):
 
     def process_item(self, item, spider):
         try:
-            self.cursor.execute(""" 
-                INSERT INTO product (sku, name, description, category, brand, website, url) 
+            self.conn.begin()
+
+            # Insert product data
+            self.cursor.execute("""
+                INSERT INTO product (sku, name, description, price, brand, website, url)
                 VALUES (%s, %s, %s, %s, %s, %s, %s)
-                ON DUPLICATE KEY UPDATE 
+                ON DUPLICATE KEY UPDATE
                 name = VALUES(name),
                 description = VALUES(description),
-                category = VALUES(category),
+                price = VALUES(price),
                 brand = VALUES(brand),
                 website = VALUES(website),
                 url = VALUES(url)
                 """,
-                (item['sku'], item['name'], item['description'], item['category'], item['brand'], item['website'], item['url'])
+                (item['sku'], item['name'], item['description'], item['price'], item['brand'], item['website'], item['url'])
             )
-            self.conn.commit()
 
+            # Get product ID
             self.cursor.execute("""
-                SELECT id FROM product WHERE sku = %s"""
-                , (item['sku'],)
-            )
+                SELECT id FROM product WHERE sku = %s
+                """, (item['sku'],))
             product_id = self.cursor.fetchone()['id']
+
             # Update price table
             self.cursor.execute("""
-                INSERT INTO price (product_id, price, fake_price, date) 
-                VALUES (%s, %s, %s, %s)
+                INSERT INTO price_history (product_id, price, fake_price)
+                VALUES (%s, %s, %s)
                 """,
-                (product_id, item['price'], item['fake_price'], dt.now())
+                (product_id, item['price'], item['fake_price'])
             )
+
+            # Insert product tags
+            for tag in item['tags']:
+                self.cursor.execute("""
+                    INSERT IGNORE INTO tag (name) VALUES (%s)
+                """, (tag,))
+
+                self.cursor.execute("""
+                    SELECT id FROM tag WHERE name = %s
+                """, (tag,))
+                tag_id = self.cursor.fetchone()['id']
+
+                self.cursor.execute("""
+                    INSERT IGNORE INTO product_tag (product_id, tag_id) VALUES (%s, %s)
+                """, (product_id, tag_id))
+
             self.conn.commit()
+
             return item
+    
         except pymysql.Error as e:
+            self.conn.rollback()
             raise DropItem(f'Error inserting item: {e}')
         
+    def close_spider(self, spider):
+        self.conn.close()
     
     def get_items(self):
         self.cursor.execute("SELECT * FROM product")

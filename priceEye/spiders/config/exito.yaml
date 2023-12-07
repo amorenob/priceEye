@@ -1,18 +1,18 @@
 base_url: https://www.exito.com
 tarjets:
-  - category: TELEVISORES
+  - tags: ['TELEVISORES', 'SMART TV']
     url: https://www.exito.com/tecnologia/televisores
     max_pages: 10
-  - category: COMPUTADORES
+  - tags: ['COMPUTADORES', 'PORTATILES']
     url: https://www.exito.com/tecnologia/computadores-y-accesorios/computadores-portatiles
     max_pages: 10
-  - category: ACCESORIOS
+  - tags: ['COMPUTADORES', 'ACCESORIOS PC']
     url: https://www.exito.com/tecnologia/computadores-y-accesorios/accesorios-para-computadores
     max_pages: 10
-  - category: ELECTRODOMESTICOS
+  - tags: ['ELECTRODOMESTICOS', 'REFRIGERACION']
     url: https://www.exito.com/electrodomesticos/refrigeracion
     max_pages: 10
-  - category: VIDEOJUEGOS
+  - category: ['VIDEOJUEGOS', 'CONSOLAS']
     url: https://www.exito.com/tecnologia/consolas-y-videojuegos/consolas
     max_pages: 10
 

@@ -16,7 +16,7 @@ class AlkostoSpider(scrapy.Spider):
 
         for tarjet in config['tarjets']:
                 
-            category = tarjet['category']
+            tags = tarjet['tags']
             max_pages = tarjet['max_pages']
 
             yield scrapy.Request(
@@ -28,7 +28,7 @@ class AlkostoSpider(scrapy.Spider):
                         playwright_page_methods =[
                             PageMethod("wait_for_selector", "div.product__item__information"),
                         ],
-                        category = category,
+                        tags = tags,
                         )
                     )
 
@@ -37,7 +37,7 @@ class AlkostoSpider(scrapy.Spider):
         #screenshot = await page.screenshot(path="page.png", full_page=True)
         # load more products
         page = response.meta["playwright_page"]
-        
+        tags = response.meta["tags"]
         try:
             while button := page.locator("//button[contains(@class,'InfiniteHits')]"):
                 await button.scroll_into_view_if_needed()
@@ -63,7 +63,7 @@ class AlkostoSpider(scrapy.Spider):
             item["fake_price"] = product.xpath(".//p[contains(@class,'discounts__old')]/text()").get()
             item['sku'] = product.css('a::attr(data-id)').get()
             item['brand'] = product.css('div.product__item__information__brand::text').get()
-            item["category"] = 1
+            item["tags"] = tags + [item["brand"]]
             item["description"] = ""
             item["website"] = "alkosto.com"
             yield item
